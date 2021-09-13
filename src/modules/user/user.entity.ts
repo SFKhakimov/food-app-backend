@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { hash } from 'bcrypt'
 import { SALT } from 'common/constants/env'
+import { USER_ROLE } from 'common/constants/roles'
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -18,6 +19,9 @@ export class UserEntity {
 
     @Column({ select: false })
     password: string
+
+    @Column('simple-array', { array: true, default: [USER_ROLE] })
+    roles: string[]
 
     @BeforeInsert()
     async hashPassword() {

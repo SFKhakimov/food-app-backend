@@ -9,17 +9,16 @@ import { UserService } from 'modules/user/user.service'
 export class AuthMiddleware implements NestMiddleware {
     constructor(private readonly userService: UserService) {}
     async use(req: ExpressRequestInterface, res: Response, next: NextFunction) {
-        if (!req.headers.authorization) {
+        const { cookies } = req
+        if (!cookies) {
             req.user = null
             next()
             return
         }
 
-        const token = req.headers.authorization
-
         try {
             const decode = verify(
-                token,
+                cookies.Cookie,
                 process.env.JWT || JWT_SECRET,
             ) as JwtPayload
             const user = await this.userService.findById(decode.id)

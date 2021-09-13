@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from 'modules/user/user.entity'
-import { Repository } from 'typeorm'
+import { FindManyOptions, Repository } from 'typeorm'
 import { UserCreateDto } from 'modules/user/dto/userCreate.dto'
 import { sign } from 'jsonwebtoken'
 import { JWT_SECRET } from 'common/constants/env'
@@ -9,7 +9,9 @@ import { UserResponseInterface } from 'modules/user/types/userResponse.interface
 import { UserLoginDto } from 'modules/user/dto/userLogin.dto'
 import { compare } from 'bcrypt'
 import { UpdateUserDto } from 'modules/user/dto/updateUserDto.dto'
-import { ExpressRequestInterface } from 'common/types/expressRequest.interface'
+import { Response } from 'express'
+import { QueryPaginationInterface } from 'common/types/query.interface'
+import { ResponsePaginationInterface } from 'common/types/response.interface'
 
 @Injectable()
 export class UserService {
@@ -23,7 +25,16 @@ export class UserService {
             {
                 email: userLoginDto.email,
             },
-            { select: ['id', 'userName', 'avatar', 'email', 'password'] },
+            {
+                select: [
+                    'id',
+                    'userName',
+                    'avatar',
+                    'email',
+                    'password',
+                    'roles',
+                ],
+            },
         )
 
         if (!currentUser) {
@@ -74,16 +85,26 @@ export class UserService {
         return await this.userRepository.save(user)
     }
 
-    async logoutUser(req: ExpressRequestInterface): Promise<boolean> {
-        req.user = null
-        return true
+    async users(
+        query: QueryPaginationInterface,
+    ): Promise<ResponsePaginationInterface<UserEntity>> {
+        const { count = 10, page = 1 } = query
+        const [users, totalCount] = await this.userRepository.findAndCount({
+            take: +count,
+            skip: +count * (+page - 1),
+        })
+        return {
+            count: +count,
+            page: +page,
+            items: users,
+            limit: totalCount,
+        }
     }
 
     generateJwt(user: UserEntity): string {
         return sign(
             {
                 id: user.id,
-                name: user.userName,
                 email: user.email,
             },
             process.env.JWT || JWT_SECRET,
@@ -97,7 +118,6 @@ export class UserService {
     buildUserResponse(user: UserEntity): UserResponseInterface {
         return {
             ...user,
-            token: this.generateJwt(user),
         }
     }
 }
