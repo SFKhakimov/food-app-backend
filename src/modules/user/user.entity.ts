@@ -1,7 +1,14 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm'
 import { hash } from 'bcrypt'
 import { SALT } from 'common/constants/env'
 import { USER_ROLE } from 'common/constants/roles'
+import { RecipeEntity } from 'modules/recipe/recipe.entity'
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -27,4 +34,7 @@ export class UserEntity {
     async hashPassword() {
         this.password = await hash(this.password, process.env.SALT || SALT)
     }
+
+    @OneToMany(() => RecipeEntity, (recipe) => recipe.author)
+    recipes: RecipeEntity[]
 }

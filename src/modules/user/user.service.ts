@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from 'modules/user/user.entity'
-import { FindManyOptions, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { UserCreateDto } from 'modules/user/dto/userCreate.dto'
 import { sign } from 'jsonwebtoken'
 import { JWT_SECRET } from 'common/constants/env'
@@ -9,7 +9,6 @@ import { UserResponseInterface } from 'modules/user/types/userResponse.interface
 import { UserLoginDto } from 'modules/user/dto/userLogin.dto'
 import { compare } from 'bcrypt'
 import { UpdateUserDto } from 'modules/user/dto/updateUserDto.dto'
-import { Response } from 'express'
 import { QueryPaginationInterface } from 'common/types/query.interface'
 import { ResponsePaginationInterface } from 'common/types/response.interface'
 
