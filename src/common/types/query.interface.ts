@@ -1,4 +1,4 @@
 export interface QueryPaginationInterface {
-    count?: string
+    limit?: string
     page?: string
 }

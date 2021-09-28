@@ -34,7 +34,7 @@ export class RecipeEntity {
     @Column({ default: false })
     liked: boolean
 
-    @Column('simple-array')
+    @Column('text', { array: true })
     categories: string[]
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

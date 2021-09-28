@@ -87,16 +87,16 @@ export class UserService {
     async users(
         query: QueryPaginationInterface,
     ): Promise<ResponsePaginationInterface<UserEntity>> {
-        const { count = 10, page = 1 } = query
+        const { limit = 10, page = 1 } = query
         const [users, totalCount] = await this.userRepository.findAndCount({
-            take: +count,
-            skip: +count * (+page - 1),
+            take: +limit,
+            skip: +limit * (+page - 1),
         })
         return {
-            count: +count,
+            count: +totalCount,
             page: +page,
             items: users,
-            limit: totalCount,
+            limit: +limit,
         }
     }
 

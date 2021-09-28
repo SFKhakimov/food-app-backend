@@ -6,6 +6,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
     UseGuards,
     UsePipes,
     ValidationPipe,
@@ -16,10 +17,19 @@ import { EditRecipeDto } from 'modules/recipe/dto/EditRecipe.dto'
 import { RecipeServices } from 'modules/recipe/recipe.services'
 import { UserEntity } from 'modules/user/user.entity'
 import { RecipeEntity } from 'modules/recipe/recipe.entity'
+import { QueryRecipesInterface } from 'modules/recipe/interfaces/QueryRecipes.interface'
 
 @Controller('recipes')
 export class RecipeController {
     constructor(private readonly recipeService: RecipeServices) {}
+
+    @Get()
+    @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe())
+    async recipes(@Query() query: QueryRecipesInterface) {
+        return await this.recipeService.recipes(query)
+    }
+
     @Post('create')
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())
