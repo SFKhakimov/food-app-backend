@@ -26,8 +26,11 @@ export class RecipeController {
     @Get()
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())
-    async recipes(@Query() query: QueryRecipesInterface) {
-        return await this.recipeService.recipes(query)
+    async recipes(
+        @User('id') id: number,
+        @Query() query: QueryRecipesInterface,
+    ) {
+        return await this.recipeService.recipes(id, query)
     }
 
     @Post('create')

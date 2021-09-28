@@ -15,8 +15,8 @@ export class RecipeServices {
         private readonly userRepository: Repository<UserEntity>,
     ) {}
 
-    async recipes(query: QueryRecipesInterface) {
-        const { limit = 10, page = 1, author, categories } = query
+    async recipes(id: number, query: QueryRecipesInterface) {
+        const { limit = 10, page = 1, author, categories, my } = query
         const offset = +limit * (+page - 1)
         const queryBuilder = getRepository(RecipeEntity)
             .createQueryBuilder('recipes')
@@ -43,6 +43,12 @@ export class RecipeServices {
                     categories,
                 },
             )
+        }
+
+        if (my) {
+            queryBuilder.andWhere('recipes.authorId = :id', {
+                id,
+            })
         }
 
         const recipes = await queryBuilder.getMany()
