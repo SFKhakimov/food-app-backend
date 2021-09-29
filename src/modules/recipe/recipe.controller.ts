@@ -18,6 +18,7 @@ import { RecipeServices } from 'modules/recipe/recipe.services'
 import { UserEntity } from 'modules/user/user.entity'
 import { RecipeEntity } from 'modules/recipe/recipe.entity'
 import { QueryRecipesInterface } from 'modules/recipe/interfaces/QueryRecipes.interface'
+import { ResponsePaginationInterface } from 'common/types/response.interface'
 
 @Controller('recipes')
 export class RecipeController {
@@ -29,7 +30,7 @@ export class RecipeController {
     async recipes(
         @User('id') id: number,
         @Query() query: QueryRecipesInterface,
-    ) {
+    ): Promise<ResponsePaginationInterface<RecipeEntity>> {
         return await this.recipeService.recipes(id, query)
     }
 
@@ -65,5 +66,25 @@ export class RecipeController {
         @Body() editRecipeDto: EditRecipeDto,
     ): Promise<RecipeEntity> {
         return this.recipeService.updateRecipe(id, editRecipeDto)
+    }
+
+    @Post(':recipeId/like')
+    @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe())
+    async likeRecipe(
+        @User('id') id: number,
+        @Param('recipeId') recipeId: number,
+    ): Promise<RecipeEntity> {
+        return this.recipeService.likeRecipe(id, recipeId)
+    }
+
+    @Delete(':recipeId/like')
+    @UseGuards(AuthGuard)
+    @UsePipes(new ValidationPipe())
+    async unLikeRecipe(
+        @User('id') id: number,
+        @Param('recipeId') recipeId: number,
+    ): Promise<RecipeEntity> {
+        return this.recipeService.unLikeRecipe(id, recipeId)
     }
 }
