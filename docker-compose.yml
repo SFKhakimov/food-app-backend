@@ -13,7 +13,7 @@ services:
   food-app:
     build: .
     command: >
-      sh -c "yarn prebuild && yarn build && yarn db:migrate && yarn start:prod"
+      sh -c "yarn build && yarn db:migrate && yarn start:prod"
     restart: unless-stopped
     environment:
       - PORT=3000
@@ -21,6 +21,7 @@ services:
       - DB_PORT=5432
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=foodapp
+      - POSTGRES_USER=postgres
     depends_on:
       - food-app-db
   food-app-db:
@@ -28,4 +29,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=foodapp
+    volumes:
+      - "/var/lib/postgresql/data:/var/lib/postgresql/data"
 
