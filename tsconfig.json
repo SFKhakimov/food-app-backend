@@ -15,7 +15,8 @@
         "paths": {
             "common/*": ["./src/common/*"],
             "modules/*": ["./src/modules/*"],
-            "src/*": ["./src/*"]
+            "src/*": ["./src/*"],
+            "config/*": ["./config/*"]
         }
     }
 }

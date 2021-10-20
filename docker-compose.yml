@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+    - "80:80"
+    volumes:
+    - ./config/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - food-app
+      - food-app-db
+  food-app:
+    build: .
+    command: >
+      sh -c "yarn prebuild && yarn build && yarn db:migrate && yarn start:prod"
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - HOST=food-app-db
+      - DB_PORT=5432
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=foodapp
+    depends_on:
+      - food-app-db
+  food-app-db:
+    image: postgres:13.4
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=foodapp
+
